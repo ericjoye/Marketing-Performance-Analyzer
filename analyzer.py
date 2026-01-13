@@ -135,6 +135,120 @@ def print_performance_summary(df_ranked):
     print("=" * 100)
     print()
 
+def calculate_budget_reallocation(df_ranked):
+    """
+    Calculate specific budget reallocation from bottom performers to top performers.
+    
+    Args:
+        df_ranked (pd.DataFrame): Ranked campaigns with metrics
+        
+    Returns:
+        dict: Reallocation details including amounts and projected impact
+    """
+    # Identify top 20% and bottom 20% campaigns
+    n_campaigns = len(df_ranked)
+    top_20_count = max(1, int(n_campaigns * 0.2))
+    bottom_20_count = max(1, int(n_campaigns * 0.2))
+    
+    top_20_campaigns = df_ranked.head(top_20_count)
+    bottom_20_campaigns = df_ranked.tail(bottom_20_count)
+    
+    # Calculate current metrics
+    bottom_20_spend = bottom_20_campaigns['spend'].sum()
+    bottom_20_conversions = bottom_20_campaigns['conversions'].sum()
+    bottom_20_avg_roi = bottom_20_campaigns['ROI'].mean()
+    bottom_20_avg_cpa = bottom_20_campaigns['CPA'].mean()
+    
+    top_20_spend = top_20_campaigns['spend'].sum()
+    top_20_conversions = top_20_campaigns['conversions'].sum()
+    top_20_avg_roi = top_20_campaigns['ROI'].mean()
+    top_20_avg_cpa = top_20_campaigns['CPA'].mean()
+    
+    # Reallocation recommendation: move 50% of bottom 20% budget to top 20%
+    reallocation_amount = bottom_20_spend * 0.5
+    
+    # Project impact (assuming top performers maintain their efficiency)
+    projected_new_conversions = reallocation_amount / top_20_avg_cpa
+    projected_roi_improvement = (top_20_avg_roi - bottom_20_avg_roi) * (reallocation_amount / df_ranked['spend'].sum())
+    
+    reallocation_data = {
+        'reallocation_amount': reallocation_amount,
+        'from_campaigns': bottom_20_campaigns[['campaign_name', 'spend', 'ROI', 'CPA']].to_dict('records'),
+        'to_campaigns': top_20_campaigns[['campaign_name', 'spend', 'ROI', 'CPA']].to_dict('records'),
+        'bottom_20_total_spend': bottom_20_spend,
+        'top_20_total_spend': top_20_spend,
+        'bottom_20_avg_roi': bottom_20_avg_roi,
+        'top_20_avg_roi': top_20_avg_roi,
+        'bottom_20_avg_cpa': bottom_20_avg_cpa,
+        'top_20_avg_cpa': top_20_avg_cpa,
+        'projected_new_conversions': projected_new_conversions,
+        'projected_roi_improvement': projected_roi_improvement,
+        'current_total_conversions': df_ranked['conversions'].sum(),
+    }
+    
+    return reallocation_data
+
+def print_budget_reallocation(reallocation_data):
+    """
+    Print detailed budget reallocation recommendations.
+    
+    Args:
+        reallocation_data (dict): Reallocation calculations from calculate_budget_reallocation
+    """
+    print("💰 BUDGET REALLOCATION STRATEGY")
+    print("=" * 100)
+    print()
+    
+    print("📉 REDUCE BUDGET - Bottom 20% ROI Campaigns:")
+    print("-" * 100)
+    for camp in reallocation_data['from_campaigns']:
+        reduction = camp['spend'] * 0.5
+        print(f"   • {camp['campaign_name']}")
+        print(f"      Current: ${camp['spend']:,.2f} | ROI: {camp['ROI']:.1f}% | CPA: ${camp['CPA']:.2f}")
+        print(f"      → Reduce by: ${reduction:,.2f} (50% cut)")
+    
+    print()
+    print(f"   TOTAL TO REALLOCATE: ${reallocation_data['reallocation_amount']:,.2f}")
+    print()
+    
+    print("📈 INCREASE BUDGET - Top 20% ROI Campaigns:")
+    print("-" * 100)
+    
+    # Distribute reallocation proportionally among top campaigns based on their current spend
+    total_top_spend = sum(camp['spend'] for camp in reallocation_data['to_campaigns'])
+    
+    for camp in reallocation_data['to_campaigns']:
+        proportion = camp['spend'] / total_top_spend
+        increase = reallocation_data['reallocation_amount'] * proportion
+        new_budget = camp['spend'] + increase
+        
+        print(f"   • {camp['campaign_name']}")
+        print(f"      Current: ${camp['spend']:,.2f} | ROI: {camp['ROI']:.1f}% | CPA: ${camp['CPA']:.2f}")
+        print(f"      → Increase by: ${increase:,.2f} → New Budget: ${new_budget:,.2f}")
+    
+    print()
+    print("=" * 100)
+    print()
+    
+    print("📊 PROJECTED IMPACT:")
+    print("-" * 100)
+    print(f"   • Amount Reallocated: ${reallocation_data['reallocation_amount']:,.2f}")
+    print(f"   • Bottom 20% Avg ROI: {reallocation_data['bottom_20_avg_roi']:.1f}%")
+    print(f"   • Top 20% Avg ROI: {reallocation_data['top_20_avg_roi']:.1f}%")
+    print(f"   • ROI Improvement Potential: +{reallocation_data['top_20_avg_roi'] - reallocation_data['bottom_20_avg_roi']:.1f}%")
+    print()
+    print(f"   • Current CPA (Bottom 20%): ${reallocation_data['bottom_20_avg_cpa']:.2f}")
+    print(f"   • Target CPA (Top 20%): ${reallocation_data['top_20_avg_cpa']:.2f}")
+    print(f"   • CPA Improvement: ${reallocation_data['bottom_20_avg_cpa'] - reallocation_data['top_20_avg_cpa']:.2f} savings per conversion")
+    print()
+    print(f"   • Projected Additional Conversions: +{reallocation_data['projected_new_conversions']:.0f}")
+    print(f"   • Current Total Conversions: {reallocation_data['current_total_conversions']:,.0f}")
+    print(f"   • New Total Conversions: {reallocation_data['current_total_conversions'] + reallocation_data['projected_new_conversions']:,.0f}")
+    print(f"   • Conversion Increase: +{(reallocation_data['projected_new_conversions'] / reallocation_data['current_total_conversions'] * 100):.1f}%")
+    print()
+    print("=" * 100)
+    print()
+
 def generate_recommendations(df_ranked):
     """
     Generate actionable optimization recommendations based on campaign performance.
@@ -331,6 +445,138 @@ def create_visualization(df_ranked):
     
     return output_file
 
+def create_reallocation_visualization(df_ranked, reallocation_data):
+    """
+    Create a visualization showing budget reallocation strategy and impact.
+    
+    Args:
+        df_ranked (pd.DataFrame): Ranked campaigns with metrics
+        reallocation_data (dict): Reallocation calculations
+    """
+    fig, axes = plt.subplots(1, 2, figsize=(16, 6))
+    fig.suptitle('Budget Reallocation Strategy & Impact Analysis', fontsize=18, fontweight='bold', y=1.00)
+    
+    # Identify top 20% and bottom 20%
+    n_campaigns = len(df_ranked)
+    top_20_count = max(1, int(n_campaigns * 0.2))
+    bottom_20_count = max(1, int(n_campaigns * 0.2))
+    
+    top_20 = df_ranked.head(top_20_count)
+    bottom_20 = df_ranked.tail(bottom_20_count)
+    
+    # 1. Before & After Budget Allocation (Left Chart)
+    ax1 = axes[0]
+    
+    campaigns = []
+    current_budgets = []
+    proposed_budgets = []
+    colors = []
+    
+    # Bottom 20% campaigns (reducing budget)
+    for camp in reallocation_data['from_campaigns']:
+        campaigns.append(camp['campaign_name'][:20])  # Truncate long names
+        current_budgets.append(camp['spend'])
+        proposed_budgets.append(camp['spend'] * 0.5)  # 50% reduction
+        colors.append('red')
+    
+    # Top 20% campaigns (increasing budget)
+    total_top_spend = sum(camp['spend'] for camp in reallocation_data['to_campaigns'])
+    for camp in reallocation_data['to_campaigns']:
+        campaigns.append(camp['campaign_name'][:20])
+        current_budgets.append(camp['spend'])
+        proportion = camp['spend'] / total_top_spend
+        increase = reallocation_data['reallocation_amount'] * proportion
+        proposed_budgets.append(camp['spend'] + increase)
+        colors.append('green')
+    
+    x = range(len(campaigns))
+    width = 0.35
+    
+    bars1 = ax1.barh([i - width/2 for i in x], current_budgets, width, 
+                     label='Current Budget', color='lightgray', edgecolor='black', linewidth=1)
+    bars2 = ax1.barh([i + width/2 for i in x], proposed_budgets, width, 
+                     label='Proposed Budget', color=colors, alpha=0.7, edgecolor='black', linewidth=1)
+    
+    ax1.set_yticks(x)
+    ax1.set_yticklabels(campaigns, fontsize=9)
+    ax1.set_xlabel('Budget ($)', fontweight='bold', fontsize=11)
+    ax1.set_title('Before & After Budget Reallocation', fontweight='bold', fontsize=12, pad=10)
+    ax1.legend(loc='lower right', fontsize=10)
+    ax1.grid(axis='x', alpha=0.3, linestyle='--')
+    
+    # Add annotations
+    ax1.text(0.02, 0.98, '▼ CUT 50%', transform=ax1.transAxes, 
+            fontsize=11, fontweight='bold', color='red', va='top',
+            bbox=dict(boxstyle='round', facecolor='white', alpha=0.8, edgecolor='red', linewidth=2))
+    ax1.text(0.02, 0.60, '▲ INCREASE', transform=ax1.transAxes, 
+            fontsize=11, fontweight='bold', color='green', va='top',
+            bbox=dict(boxstyle='round', facecolor='white', alpha=0.8, edgecolor='green', linewidth=2))
+    
+    # 2. Projected Impact Comparison (Right Chart)
+    ax2 = axes[1]
+    
+    metrics = ['Avg ROI\n(%)', 'Avg CPA\n($)', 'Conv Rate\n(%)']
+    
+    bottom_20_metrics = [
+        reallocation_data['bottom_20_avg_roi'],
+        reallocation_data['bottom_20_avg_cpa'],
+        bottom_20['conversion_rate'].mean()
+    ]
+    
+    top_20_metrics = [
+        reallocation_data['top_20_avg_roi'],
+        reallocation_data['top_20_avg_cpa'],
+        top_20['conversion_rate'].mean()
+    ]
+    
+    x_pos = range(len(metrics))
+    width = 0.35
+    
+    bars1 = ax2.bar([i - width/2 for i in x_pos], bottom_20_metrics, width,
+                    label='Bottom 20% (Cut Budget)', color='#ff6b6b', alpha=0.8, 
+                    edgecolor='black', linewidth=1.5)
+    bars2 = ax2.bar([i + width/2 for i in x_pos], top_20_metrics, width,
+                    label='Top 20% (Add Budget)', color='#51cf66', alpha=0.8, 
+                    edgecolor='black', linewidth=1.5)
+    
+    ax2.set_ylabel('Value', fontweight='bold', fontsize=11)
+    ax2.set_title('Performance Metrics Comparison', fontweight='bold', fontsize=12, pad=10)
+    ax2.set_xticks(x_pos)
+    ax2.set_xticklabels(metrics, fontsize=10, fontweight='bold')
+    ax2.legend(loc='upper left', fontsize=10)
+    ax2.grid(axis='y', alpha=0.3, linestyle='--')
+    
+    # Add value labels on bars
+    for bars in [bars1, bars2]:
+        for bar in bars:
+            height = bar.get_height()
+            ax2.text(bar.get_x() + bar.get_width()/2., height,
+                    f'{height:.1f}',
+                    ha='center', va='bottom', fontsize=9, fontweight='bold')
+    
+    # Add impact callout
+    impact_text = f"""PROJECTED IMPACT:
+    
+✓ +{reallocation_data['projected_new_conversions']:.0f} conversions
+✓ +{(reallocation_data['projected_new_conversions'] / reallocation_data['current_total_conversions'] * 100):.1f}% increase
+✓ ${reallocation_data['reallocation_amount']:,.0f} reallocated
+✓ ROI boost: +{reallocation_data['top_20_avg_roi'] - reallocation_data['bottom_20_avg_roi']:.0f}%"""
+    
+    ax2.text(0.98, 0.50, impact_text, transform=ax2.transAxes,
+            fontsize=9, fontweight='bold', ha='right', va='center',
+            bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.9, 
+                     edgecolor='orange', linewidth=2))
+    
+    plt.tight_layout()
+    
+    # Save the visualization
+    output_file = '/home/claude/budget_reallocation_strategy.png'
+    plt.savefig(output_file, dpi=300, bbox_inches='tight')
+    print(f"✓ Reallocation visualization saved: {output_file}")
+    print()
+    
+    return output_file
+
 def main():
     """
     Main execution function.
@@ -361,11 +607,19 @@ def main():
     # 5. Generate recommendations
     generate_recommendations(df_ranked)
     
-    # 6. Create visualization
+    # 6. Calculate and display budget reallocation strategy
+    print("💡 Calculating optimal budget reallocation...")
+    reallocation_data = calculate_budget_reallocation(df_ranked)
+    print_budget_reallocation(reallocation_data)
+    
+    # 7. Create visualizations
     print("📈 Creating performance dashboard...")
     viz_file = create_visualization(df_ranked)
     
-    # 7. Save detailed report
+    print("📊 Creating budget reallocation visualization...")
+    realloc_viz_file = create_reallocation_visualization(df_ranked, reallocation_data)
+    
+    # 8. Save detailed report
     output_csv = '/home/claude/campaign_analysis_results.csv'
     df_ranked.to_csv(output_csv, index=False)
     print(f"✓ Detailed results saved: {output_csv}")

@@ -24,6 +24,17 @@ Marketing teams spend significant budgets across multiple channels (social media
 3. **Poor Visibility**: Lacking clear metrics to compare campaign performance
 4. **Data Overload**: Having data but no actionable recommendations
 
+### 💡 NEW: Automated Budget Reallocation
+
+The analyzer now provides **specific, actionable budget recommendations**:
+
+- **Identifies** bottom 20% ROI campaigns to reduce by 50%
+- **Calculates** exact dollar amounts to reallocate to top 20% performers
+- **Projects** impact: additional conversions, ROI boost, CPA savings
+- **Visualizes** before/after budget allocation with impact metrics
+
+**Example Output**: "Shift $6,050 from 3 underperformers to 3 top campaigns → +876 conversions (+18% increase), +523% ROI improvement"
+
 ---
 
 ## 📈 Key Metrics Explained
@@ -121,8 +132,9 @@ marketing-performance-analyzer/
 ├── README.md                    # This file
 │
 ├── Generated Outputs:
-│   ├── campaign_analysis_results.csv      # Detailed results with rankings
-│   └── campaign_performance_dashboard.png # Visual performance dashboard
+│   ├── campaign_analysis_results.csv         # Detailed results with rankings
+│   ├── campaign_performance_dashboard.png    # Visual performance dashboard (4 charts)
+│   └── budget_reallocation_strategy.png      # Budget reallocation visualization (2 charts)
 ```
 
 ---
@@ -175,11 +187,33 @@ marketing-performance-analyzer/
 - **Budget Allocation Insights**: Overall spend efficiency
 - **Quick Wins**: Low-hanging fruit opportunities
 
-#### 3. Visual Dashboard (4 Charts)
+#### 3. Budget Reallocation Strategy (NEW!)
+- **Specific dollar amounts** to shift from bottom 20% to top 20% ROI campaigns
+- **Detailed breakdown** showing current vs. proposed budgets for each campaign
+- **Projected impact**: Additional conversions, ROI improvement, and CPA savings
+- **Example Output**:
+  ```
+  TOTAL TO REALLOCATE: $6,050.00
+  • Cut 50% from: YouTube_PreRoll, LinkedIn_B2B_Outreach, Brand_Awareness_Q3
+  • Add to: Email_Newsletter_Oct (+$913), Retargeting_Campaign (+$1,598)
+  
+  PROJECTED IMPACT:
+  • +876 conversions (+18.0% increase)
+  • ROI boost: +523.5%
+  • $15.65 CPA savings per conversion
+  ```
+
+#### 4. Visual Dashboard (4 Charts)
 - **ROI Comparison**: Bar chart showing profitability
 - **Cost Efficiency Matrix**: Scatter plot of CPA vs Conversion Rate
 - **Spend vs Conversions**: Budget allocation effectiveness
 - **CTR vs Conversion Rate**: Funnel performance comparison
+
+#### 5. Budget Reallocation Visualization (NEW!)
+- **Before & After Chart**: Visual comparison of current vs. proposed budgets
+- **Performance Metrics Comparison**: ROI, CPA, and conversion rate differences
+- **Impact Summary**: Key projected outcomes highlighted
+- Red bars = budget cuts, Green bars = budget increases
 
 ---
 
@@ -202,6 +236,24 @@ marketing-performance-analyzer/
    • Social_Media_Boost
       → CTR: 4.0% (Good) | Conversion Rate: 5.0% (Needs Work)
       → Recommendation: A/B test landing pages, improve load speed, clarify CTA
+
+💰 BUDGET REALLOCATION STRATEGY:
+   TOTAL TO REALLOCATE: $6,050.00
+   
+   📉 Cut 50% from bottom 20%:
+      • YouTube_PreRoll: $5,100 → $2,550 (-$2,550)
+      • LinkedIn_B2B_Outreach: $2,800 → $1,400 (-$1,400)
+      • Brand_Awareness_Q3: $4,200 → $2,100 (-$2,100)
+   
+   📈 Add to top 20%:
+      • Email_Newsletter_Oct: $800 → $1,713 (+$913)
+      • Retargeting_Campaign: $1,400 → $2,998 (+$1,598)
+      • Black_Friday_Early: $3,100 → $6,639 (+$3,539)
+   
+   📊 PROJECTED IMPACT:
+      ✓ +876 conversions (+18.0% increase)
+      ✓ ROI boost: +523.5%
+      ✓ $15.65 CPA savings per conversion
 ```
 
 ---
@@ -288,7 +340,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 **Questions or Issues?**
 - Open an issue on GitHub
-- Contact: mail@ericjoye.com
+- Contact: analytics-team@yourcompany.com
+- Documentation: [Link to full docs]
 
 ---
 
@@ -304,6 +357,11 @@ To get the most out of this tool, check out:
 ---
 
 ## 🚀 Roadmap
+
+### Recently Added Features:
+- [x] ✅ **Budget reallocation suggestions** with specific dollar amounts
+- [x] ✅ **Projected impact calculations** (conversions, ROI, CPA improvements)
+- [x] ✅ **Before/After visualization** showing budget shifts
 
 ### Upcoming Features:
 - [ ] API integrations (Google Ads, Facebook Ads, LinkedIn Ads)
@@ -322,6 +380,6 @@ If you find this tool useful, please star the repository! It helps others discov
 
 ---
 
-**Built with ❤️ by Eric Joye**
+**Built with ❤️ by the Data Analytics Team**
 
 *Last Updated: January 2026*
