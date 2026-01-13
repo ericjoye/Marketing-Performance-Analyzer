@@ -288,8 +288,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 **Questions or Issues?**
 - Open an issue on GitHub
-- Contact: analytics-team@yourcompany.com
-- Documentation: [Link to full docs]
+- Contact: mail@ericjoye.com
 
 ---
 
@@ -323,6 +322,6 @@ If you find this tool useful, please star the repository! It helps others discov
 
 ---
 
-**Built with ❤️ by the Data Analytics Team**
+**Built with ❤️ by Eric Joye**
 
 *Last Updated: January 2026*
