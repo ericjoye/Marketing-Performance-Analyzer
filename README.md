@@ -8,21 +8,21 @@ A comprehensive Python-based analytics tool for evaluating marketing campaign pe
 
 ## 📋 Table of Contents
 
-- [Business Use Case](#🎯-business-use-case)
-- [Key Metrics Explained](#📈-key-metrics-explained)
-- [Getting Started](#🚀-getting-started)
-- [Project Structure](#📁-project-structure)
-- [How Teams Use This Analysis](#💼-how-teams-use-this-analysis)
-- [Understanding the Output](#🔍-understanding-the-output)
-- [Sample Insights from Analysis](#🎨-sample-insights-from-analysis)
-- [Customization](#🛠️-customization)
-- [Advanced Usage](#📊-advanced-usage)
-- [Contributing](#🤝-contributing)
-- [License](#📜-license)
-- [Support](#📞-support)
-- [Learning Resources](#🎓-learning-resources)
-- [Roadmap](#🚀-roadmap)
-- [Star This Repository](#⭐-star-this-repository)
+- [Business Use Case](#-business-use-case)
+- [Key Metrics Explained](#-key-metrics-explained)
+- [Getting Started](#-getting-started)
+- [Project Structure](#-project-structure)
+- [How Teams Use This Analysis](#-how-teams-use-this-analysis)
+- [Understanding the Output](#-understanding-the-output)
+- [Sample Insights from Analysis](#-sample-insights-from-analysis)
+- [Customization](#-customization)
+- [Advanced Usage](#-advanced-usage)
+- [Contributing](#-contributing)
+- [License](#-license)
+- [Support](#-support)
+- [Learning Resources](#-learning-resources)
+- [Roadmap](#-roadmap)
+- [Star This Repository](#-star-this-repository)
 
 ## 🎯 Business Use Case
 
